@@ -1,6 +1,4 @@
-# 我的第一个GitHub项目
-
-这是项目 [Test](https://github.com/Entiy/Test) ，
+这是项目 [bravo](https://github.com/Entiy/Test) ，
 欢迎访问。
 
 这个项目的版本库是 **Git格式** ，在 Windows、Linux、Mac OS X
@@ -21,7 +19,3 @@
 
     $ git clone git://github.com/Entiy/Test.git
 
-
-## 1号在测试不同文件测试
-## 2号在测试不同文件测试
-## git diff的使用O(∩_∩)O哈哈~
