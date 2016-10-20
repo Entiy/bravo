@@ -51,7 +51,7 @@ public class DecisionTree {
 				maxMap=targetMap;
 			}
 		}
-		attrlist.remove(k);
+		attrlist.remove((Integer)k);
 		TreeEdge[] edges=new TreeEdge[maxMap.size()];
 		Iterator iter=maxMap.entrySet().iterator();
 		node.setId(k);
@@ -75,6 +75,9 @@ public class DecisionTree {
 		int sum=0;
 		for (int i = 0; i < node.getEdges().length; i++) {
 			TreeNode currentNode=node.getEdges()[i].childNoe;
+			if(currentNode.getLabel().size()<=1){
+				return;
+			}else{
 			Iterator it=currentNode.getLabel().entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry entry=(Map.Entry)it.next();
@@ -96,7 +99,7 @@ public class DecisionTree {
 					maxMap=temp;
 				}
 			}
-			attrlist.remove(k);
+			attrlist.remove((Integer)k);
 			TreeEdge[] edges=new TreeEdge[maxMap.size()];
 			Iterator iter=maxMap.entrySet().iterator();
 			currentNode.setId(k);
@@ -114,6 +117,7 @@ public class DecisionTree {
 			
 			currentNode.setEdges(edges);
 			insertNode(currentNode);
+		}
 		}
 	}
 }
