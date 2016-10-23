@@ -23,19 +23,28 @@ public class DecisionTree {
 				{0,1,1,1,1},
 				{1,1,0,1,1},
 				{1,0,1,0,1},
-				{2,1,0,1,0}
+				{2,1,0,1,0},
 			};
 			
 	static DTUtil help=null;
 	public static void main(String[] args) {
 		
 		DecisionTree tree=new DecisionTree();
-		help=new DTUtil(dataSet);
+		help=new DTUtil();
 		TreeNode root=new TreeNode();
-		tree.createTree(root);
+		tree.createTree(root,dataSet);
+		tree.printNode(root);
 	}
 	
-	public void createTree(TreeNode node) {
+	public void printNode(TreeNode node){
+		if(node!=null){
+			System.out.println(node.getId());
+			if(node.getEdges()!=null)
+				for(int i=0;i<node.getEdges().length;i++)
+					printNode(node.getEdges()[i].getChildNoe());
+		}
+	}
+	public void createTree(TreeNode node,int dataSet[][]) {
 		
 		int k=0;
 		HashMap<Integer, HashMap<Integer,Integer>> maxMap=null;
@@ -44,7 +53,7 @@ public class DecisionTree {
 		for (int j = 0; j < dataSet[0].length-1; j++) {
 			attrlist.add(j);
 			HashMap<Integer, HashMap<Integer,Integer>> targetMap =new HashMap<Integer,HashMap<Integer,Integer>>();
-			double tp=help.getMaxGainRation(j,targetMap);
+			double tp=help.getMaxGainRation(j,targetMap,dataSet);
 			if(maxGain<tp){
 				maxGain=tp;
 				k=j;
@@ -67,16 +76,16 @@ public class DecisionTree {
 			edges[n++].setValue((int)entry.getKey());
 		}
 		node.setEdges(edges);
-		insertNode(node);
+		insertNode(node,dataSet);
+		
 	}
 	
-	public void insertNode(TreeNode node) {
+	public void insertNode(TreeNode node,int dataSet[][]) {
 		
 		int sum=0;
 		for (int i = 0; i < node.getEdges().length; i++) {
 			TreeNode currentNode=node.getEdges()[i].childNoe;
 			if(currentNode.getLabel().size()<=1){
-				return;
 			}else{
 			Iterator it=currentNode.getLabel().entrySet().iterator();
 			while (it.hasNext()) {
@@ -84,7 +93,8 @@ public class DecisionTree {
 				sum+=(int)entry.getValue();
 			}
 			
-			help.dataSet=help.pickUpSubArray(node.getEdges()[i].getValue(),sum,node.getId());
+			int tempData[][]=help.pickUpSubArray(node.getEdges()[i].getValue(),sum,node.getId(),dataSet);
+			sum=0;
 			int k=0;
 			HashMap<Integer, HashMap<Integer,Integer>> maxMap=null;
 			List<Integer> attrlist=new ArrayList<Integer>();//属性编号数组，用编号代替名称
@@ -92,7 +102,8 @@ public class DecisionTree {
 			for (int j = 0; j < currentNode.getAttrlist().size(); j++) {
 				attrlist.add(currentNode.getAttrlist().get(j));
 				HashMap<Integer, HashMap<Integer,Integer>> temp=new HashMap<Integer, HashMap<Integer,Integer>>();
-				double tp=help.getMaxGainRation(currentNode.getAttrlist().get(j),temp);
+				int mm=currentNode.getAttrlist().get(j);
+				double tp=help.getMaxGainRation(currentNode.getAttrlist().get(j),temp,tempData);
 				if(maxGain<tp){
 					maxGain=tp;
 					k=currentNode.getAttrlist().get(j);
@@ -114,9 +125,8 @@ public class DecisionTree {
 				edges[n].setChildNoe(childNoe);
 				edges[n++].setValue((int)entry.getKey());
 			}
-			
 			currentNode.setEdges(edges);
-			insertNode(currentNode);
+			insertNode(currentNode,tempData);
 		}
 		}
 	}

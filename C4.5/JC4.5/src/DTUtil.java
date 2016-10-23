@@ -9,17 +9,11 @@ import org.omg.CORBA.INTERNAL;
 
 public class DTUtil {
 
-	int dataSet[][]=null;
-	public DTUtil(int[][] dataSet) {
-		this.dataSet=dataSet;
-	}
-
-	
 	//给定一个属性列计算其信息增益率
-	public  double getMaxGainRation(Integer index,HashMap<Integer, HashMap<Integer,Integer>> targetMap){
+	public  double getMaxGainRation(Integer index,HashMap<Integer, HashMap<Integer,Integer>> targetMap,int dataSet[][]){
 		
 		//HashMap<Integer, HashMap<Integer,Integer>> targetMap =new HashMap<Integer,HashMap<Integer,Integer>>();
-		CalnumPerValuePerColumn(index, targetMap);
+		CalnumPerValuePerColumn(index, targetMap,dataSet);
 		double gain=0.0;
 		int sum=0;//每个分类的数量
 		double split=0.0;//分裂信息
@@ -46,7 +40,7 @@ public class DTUtil {
 		}
 		gain/=total;
 		HashMap<Integer, Integer> temp=new HashMap<>();
-		CalnumPerValueTargetColumn(index, temp);
+		CalnumPerValueTargetColumn(index, temp,dataSet);
 		gain=getEntropy(temp, total)-gain;
 		return gain/(-split);
 		
@@ -64,11 +58,11 @@ public class DTUtil {
     }
 
     //计算目标列的熵
-    public void CalnumPerValueTargetColumn(int index,HashMap<Integer, Integer> temp) {
-    	int resule[]=getSameValueArray(index);
-		for (int i = 0; i < resule.length; i++) {
+    public void CalnumPerValueTargetColumn(int index,HashMap<Integer, Integer> temp,int dataSet[][]) {
+    	int result[]=getSameValueArray(index,dataSet);
+		for (int i = 0; i < result.length; i++) {
 			for (int j = 0; j < dataSet.length; j++)
-				if (resule[i]==dataSet[j][index])
+				if (result[i]==dataSet[j][index])
 					if (temp.get(dataSet[j][4])!=null) 
 						temp.put(dataSet[j][4], temp.get(dataSet[j][4])+1);
 					else
@@ -78,32 +72,32 @@ public class DTUtil {
 	}
     
 	//计算一列数据按相同值划分的，每个值的数据个数
-	public  void CalnumPerValuePerColumn(int index,HashMap<Integer, HashMap<Integer,Integer>> temp){
+	public  void CalnumPerValuePerColumn(int index,HashMap<Integer, HashMap<Integer,Integer>> temp,int dataSet[][]){
 		
-		int resule[]=getSameValueArray(index);
-		for (int i = 0; i < resule.length; i++) {
+		int result[]=getSameValueArray(index,dataSet);
+		for (int i = 0; i < result.length; i++) {
 			for (int j = 0; j < dataSet.length; j++) {
-				if (resule[i]==dataSet[j][index]) {
-					if (temp.get(resule[i])!=null) {
-						HashMap<Integer, Integer> t=temp.get(resule[i]);
+				if (result[i]==dataSet[j][index]) {
+					if (temp.get(result[i])!=null) {
+						HashMap<Integer, Integer> t=temp.get(result[i]);
 						if(t.get(dataSet[j][4])!=null){
 							t.put(dataSet[j][4], t.get(dataSet[j][4])+1);
 						}else {
 							t.put(dataSet[j][4], 1);
 						}
-						temp.put(resule[i], t);
+						temp.put(result[i], t);
 					}
 					else{
 						HashMap<Integer, Integer> t=new HashMap<Integer, Integer>();
 						t.put(dataSet[j][4], 1);
-						temp.put(resule[i],t);
+						temp.put(result[i],t);
 					}
 				} 
 			}
 		}
 	}
 	
-	public int[] getSameValueArray(int index) {
+	public int[] getSameValueArray(int index,int dataSet[][]) {
 		TreeSet<Integer> values = new TreeSet<Integer>(new Comparator<Object>() {
 			@Override
 			public int compare(Object obj1, Object obj2) {
@@ -123,14 +117,14 @@ public class DTUtil {
 		return result;
 	}
 	
-	public int[][] pickUpSubArray(int value,int row,int index) {
+	public int[][] pickUpSubArray(int value,int row,int index,int data[][]) {
 		
 		int sunDataSet[][]=new int[row][5];
 		int line=0;
-		for (int i = 0; i < dataSet.length; i++) {
-				if (dataSet[i][index]==value) {
-					for (int j = 0; j < dataSet[0].length; j++) {
-						sunDataSet[line][j]=dataSet[i][j];
+		for (int i = 0; i < data.length; i++) {
+				if (data[i][index]==value) {
+					for (int j = 0; j < data[0].length; j++) {
+						sunDataSet[line][j]=data[i][j];
 					}
 					line++;
 				}

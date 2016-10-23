@@ -1,7 +1,7 @@
 
 public class TreeEdge {
-	int value;//权值
-	TreeNode childNoe;//边指向的下一个节点
+	int value=-1;//权值
+	TreeNode childNoe=null;//边指向的下一个节点
 	
 	public int getValue() {
 		return value;

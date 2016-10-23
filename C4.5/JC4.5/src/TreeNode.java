@@ -5,10 +5,10 @@ import java.util.Map;
 
 public class TreeNode {
 
-	int id;//分裂的属性id
-	Map<Integer, Integer> label;//实例类别以及对应个数
-	List<Integer> attrlist;//含有的待分类属性
-	TreeEdge edges[];//树节点含有的边数
+	int id=-1;//分裂的属性id
+	Map<Integer, Integer> label=null;//实例类别以及对应个数
+	List<Integer> attrlist=null;//含有的待分类属性
+	TreeEdge edges[]=null;//树节点含有的边数
 	
 	public int getId() {
 		return id;
