@@ -10,9 +10,8 @@ import org.omg.CORBA.INTERNAL;
 public class DTUtil {
 
 	//给定一个属性列计算其信息增益率
-	public  double getMaxGainRation(Integer index,HashMap<Integer, HashMap<Integer,Integer>> targetMap,int dataSet[][]){
+	public  double getMaxGainRation(int index,HashMap<Integer, HashMap<Integer,Integer>> targetMap,int dataSet[][]){
 		
-		//HashMap<Integer, HashMap<Integer,Integer>> targetMap =new HashMap<Integer,HashMap<Integer,Integer>>();
 		CalnumPerValuePerColumn(index, targetMap,dataSet);
 		double gain=0.0;
 		int sum=0;//每个分类的数量
@@ -21,6 +20,7 @@ public class DTUtil {
 		int i=0;
 		int total=0;
 		Iterator iter = targetMap.entrySet().iterator();
+		HashMap<Integer, Integer> targetTemp=new HashMap<>();
 		while (iter.hasNext()) {
 			Map.Entry entry = (Map.Entry) iter.next();
 			HashMap<Integer, Integer> temp=(HashMap<Integer, Integer>)entry.getValue();
@@ -28,21 +28,25 @@ public class DTUtil {
 			while (iter1.hasNext()) {
 				Map.Entry entry1= (Map.Entry) iter1.next();
 				sum+=(int)entry1.getValue();
+				if (targetTemp.containsKey(entry1.getKey())) 
+					targetTemp.put((Integer)entry1.getKey(), targetTemp.get(entry1.getKey())+(Integer)entry1.getValue());
+				else 
+					targetTemp.put((Integer)entry1.getKey(),(Integer)entry1.getValue());
 			}
 			total+=sum;
 			numarry[i++]=sum;
-			gain+=sum*getEntropy(temp,sum);
+			gain+=sum*getEntropy(temp,sum);//初始条件熵的计算
 			sum=0;
 		}
+		
+		//计算分裂信息
 		for (int j = 0; j < numarry.length; j++) {
 			double p=((1.0)*numarry[j])/total;
 			split+=p*(Math.log(p)/Math.log((double)2));
 		}
-		gain/=total;
-		HashMap<Integer, Integer> temp=new HashMap<>();
-		CalnumPerValueTargetColumn(index, temp,dataSet);
-		gain=getEntropy(temp, total)-gain;
-		return gain/(-split);
+		gain/=total;//最终条件熵
+		gain=getEntropy(targetTemp,total)-gain;//计算信息增益
+		return gain/(-split);//计算信息增益率
 		
 	}
 	//计算熵
@@ -56,20 +60,6 @@ public class DTUtil {
 		}
         return -entropy;
     }
-
-    //计算目标列的熵
-    public void CalnumPerValueTargetColumn(int index,HashMap<Integer, Integer> temp,int dataSet[][]) {
-    	int result[]=getSameValueArray(index,dataSet);
-		for (int i = 0; i < result.length; i++) {
-			for (int j = 0; j < dataSet.length; j++)
-				if (result[i]==dataSet[j][index])
-					if (temp.get(dataSet[j][4])!=null) 
-						temp.put(dataSet[j][4], temp.get(dataSet[j][4])+1);
-					else
-						temp.put(dataSet[j][4], 1);
-				 
-		}
-	}
     
 	//计算一列数据按相同值划分的，每个值的数据个数
 	public  void CalnumPerValuePerColumn(int index,HashMap<Integer, HashMap<Integer,Integer>> temp,int dataSet[][]){
