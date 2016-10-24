@@ -93,7 +93,7 @@ public class DecisionTree {
 				sum+=(int)entry.getValue();
 			}
 			
-			int tempData[][]=help.pickUpSubArray(node.getEdges()[i].getValue(),sum,node.getId(),dataSet);
+			int subNodeDataSet[][]=help.pickUpSubArray(node.getEdges()[i].getValue(),sum,node.getId(),dataSet);
 			sum=0;
 			int k=0;
 			HashMap<Integer, HashMap<Integer,Integer>> maxMap=null;
@@ -103,7 +103,7 @@ public class DecisionTree {
 				attrlist.add(currentNode.getAttrlist().get(j));
 				HashMap<Integer, HashMap<Integer,Integer>> temp=new HashMap<Integer, HashMap<Integer,Integer>>();
 				int mm=currentNode.getAttrlist().get(j);
-				double tp=help.getMaxGainRation(currentNode.getAttrlist().get(j),temp,tempData);
+				double tp=help.getMaxGainRation(currentNode.getAttrlist().get(j),temp,subNodeDataSet);
 				if(maxGain<tp){
 					maxGain=tp;
 					k=currentNode.getAttrlist().get(j);
@@ -126,7 +126,7 @@ public class DecisionTree {
 				edges[n++].setValue((int)entry.getKey());
 			}
 			currentNode.setEdges(edges);
-			insertNode(currentNode,tempData);
+			insertNode(currentNode,subNodeDataSet);
 		}
 		}
 	}

@@ -64,52 +64,29 @@ public class DTUtil {
 	//计算一列数据按相同值划分的，每个值的数据个数
 	public  void CalnumPerValuePerColumn(int index,HashMap<Integer, HashMap<Integer,Integer>> temp,int dataSet[][]){
 		
-		int result[]=getSameValueArray(index,dataSet);
-		for (int i = 0; i < result.length; i++) {
-			for (int j = 0; j < dataSet.length; j++) {
-				if (result[i]==dataSet[j][index]) {
-					if (temp.get(result[i])!=null) {
-						HashMap<Integer, Integer> t=temp.get(result[i]);
-						if(t.get(dataSet[j][4])!=null){
-							t.put(dataSet[j][4], t.get(dataSet[j][4])+1);
-						}else {
-							t.put(dataSet[j][4], 1);
-						}
-						temp.put(result[i], t);
-					}
-					else{
-						HashMap<Integer, Integer> t=new HashMap<Integer, Integer>();
-						t.put(dataSet[j][4], 1);
-						temp.put(result[i],t);
-					}
-				} 
+		for (int i = 0; i < dataSet.length; i++) {
+			if (temp.containsKey(dataSet[i][index])) {
+				HashMap<Integer, Integer> t=temp.get(dataSet[i][index]);
+				if (t.containsKey(dataSet[i][dataSet[0].length-1]))
+					t.put(dataSet[i][dataSet[0].length-1], t.get(dataSet[i][dataSet[0].length-1])+1);
+				else 
+					t.put(dataSet[i][dataSet[0].length-1],1);
+				temp.put(dataSet[i][index], t);
+			}
+			else {
+				HashMap<Integer, Integer> t=new HashMap<Integer, Integer>();
+				t.put(dataSet[i][dataSet[0].length-1], 1);
+				temp.put(dataSet[i][index],t);
 			}
 		}
-	}
-	
-	public int[] getSameValueArray(int index,int dataSet[][]) {
-		TreeSet<Integer> values = new TreeSet<Integer>(new Comparator<Object>() {
-			@Override
-			public int compare(Object obj1, Object obj2) {
-				int a = (int) obj1;
-				int b = (int) obj2;
-				return a-b;
-			}
-		});
-		for (int i = 0; i < dataSet.length; i++) 
-			values.add(dataSet[i][index]);
 		
-		int[] result = new int[values.size()];
-		Object obj[]=values.toArray();
-		for (int i = 0; i < obj.length; i++) {
-			result[i]=(int)obj[i];
-		}
-		return result;
+
 	}
 	
+	//需要修改属性的数量
 	public int[][] pickUpSubArray(int value,int row,int index,int data[][]) {
 		
-		int sunDataSet[][]=new int[row][5];
+		int sunDataSet[][]=new int[row][data[0].length];
 		int line=0;
 		for (int i = 0; i < data.length; i++) {
 				if (data[i][index]==value) {
